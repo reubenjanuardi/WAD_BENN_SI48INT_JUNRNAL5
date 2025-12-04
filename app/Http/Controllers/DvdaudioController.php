@@ -17,9 +17,11 @@ class DvdaudioController extends Controller
     {
         // get all dvd audio data
         // $dvdaudios = ....
+        $dvdaudios = DvdAudio::all();
 
         // return the collection of dvd audios
         // return ....
+        return DvdaudioResource::collection($dvdaudios);
     }
 
     /**
@@ -30,21 +32,30 @@ class DvdaudioController extends Controller
     {
         // The request body are title, artist and year
         $validator = Validator::make($request->all(), [
-            
+            'title' => 'required|string|max:255',
+            'artist' => 'required|string|max:255',
+            'year' => 'nullable|integer'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 // 'success' => false,
                 // 'errors' => ....
+                'success' => false,
+                'errors' => $validator->errors()
             ], 422);
         }
 
         // Create dvd audio data
         // $dvdaudio = ....
+        $dvdaudio = Dvdaudio::create($validator->validated());
 
         // return the created dvd audio as resource
         // return ....
+        return (new DvdaudioResource($dvdaudio))
+                ->additional(['message'=>'Dvd Audio created successfully'])
+                ->response()
+                ->setStatusCode(201);
 
     }
 
@@ -56,16 +67,20 @@ class DvdaudioController extends Controller
     {
         // Find dvd audio data by ID
         // $dvdaudio = ....
+        $dvdaudio = DvdAudio::find($id);
 
         if (!$dvdaudio) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                'success' => false,
+                'message' => 'Dvd Audio not found'
             ], 404);
         }
 
         // return the dvd audio as resource
         // return ....
+        return new DvdaudioResource($dvdaudio);
     }
 
     /**
@@ -119,18 +134,25 @@ class DvdaudioController extends Controller
     {
         // Find dvd audio data by ID
         // $dvdaudio = ....
+        $dvdaudio = DvdAudio::find($id);
 
         if (!$dvdaudio) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                'success' => false,
+                'message' => 'Dvd Audio not found'
             ], 404);
         }
 
         // Delete dvd audio data
         // $dvdaudio->....
+        $dvdaudio->delete();
 
         // return success message
         // return ....
+        return response()->json([
+            'message'=> 'Dvd Audio deleted successfully'
+        ], 200);
     }
 }
