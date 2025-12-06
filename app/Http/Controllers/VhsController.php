@@ -17,7 +17,10 @@ class VhsController extends Controller
     {
         // get all vhs data
         // $vhss = ....
-
+$vhss = Vhs::all();
+        return VhsResource::collection($vhss)
+            ->response()
+            ->setStatusCode(200);
         // return the collection of vhss
         // return ....
     }
@@ -30,21 +33,36 @@ class VhsController extends Controller
     {
         // The request body are title, director and year
         $validator = Validator::make($request->all(), [
-            
+             'title' => 'required|string|max:255',
+            'director' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . date('Y'),
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 // 'success' => false,
                 // 'errors' => ....
+               
+                'success' => false,
+                'errors' => $validator->errors()
+           
             ], 422);
         }
 
         // Create vhs data
         // $vhs = ....
+        $vhs = Vhs::create([
+            'title' => $request->input('title'),
+            'director' => $request->input('director'),
+            'year' => $request->input('year'),
+        ]);
 
         // return the created vhs as resource
         // return ....
+           return (new VhsResource($vhs))
+            ->additional(['message' => 'VHS created successfully'])
+            ->response()
+            ->setStatusCode(201);
 
     }
 
@@ -56,16 +74,22 @@ class VhsController extends Controller
     {
         // Find vhs data by ID
         // $vhs = ....
-
+ $vhs = Vhs::find($id);
         if (!$vhs) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                'success' => false,
+                'message' => 'VHS not found'
             ], 404);
         }
 
         // return the vhs as resource
         // return ....
+        
+        return (new VhsResource($vhs))
+            ->response()
+            ->setStatusCode(200);
     }
 
     /**
@@ -119,18 +143,26 @@ class VhsController extends Controller
     {
         // Find vhs data by ID
         // $vhs = ....
+   $vhs = Vhs::find($id);
 
         if (!$vhs) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                  'success' => false,
+                'message' => 'VHS not found'
             ], 404);
         }
 
         // Delete vhs data
         // $vhs->....
 
+        $vhs->delete();
         // return success message
         // return ....
+         return response()->json([
+            'success' => true,
+            'message' => 'VHS deleted successfully'
+        ], 200);
     }
 }

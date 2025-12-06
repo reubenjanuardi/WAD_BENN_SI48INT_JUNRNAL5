@@ -17,7 +17,16 @@ return new class extends Migration
          * id, title, director, year, timestamps
          */
         Schema::create('vhss', function (Blueprint $table) {
-
+ $table->id();
+            $table->string('title', 255);
+            $table->string('director', 255);
+            // YEAR column — if your DB/Blueprint doesn't support ->year(), change to ->smallInteger('year')
+            if (method_exists($table, 'year')) {
+                $table->year('year');
+            } else {
+                $table->smallInteger('year')->unsigned();
+            }
+            $table->timestamps();
         });
     }
 
