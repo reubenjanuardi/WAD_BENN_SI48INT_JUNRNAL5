@@ -16,11 +16,7 @@ use App\Http\Controllers\AuthController;
  * unprotected routes for user registration and login
  */
 
-Route::get('/vhss', [VhsController::class, 'index']);     
-Route::post('/vhss', [VhsController::class, 'store']);    
-Route::get('/vhss/{id}', [VhsController::class, 'show']);  
-Route::put('/vhss/{id}', [VhsController::class, 'update']);
-Route::delete('/vhss/{id}', [VhsController::class, 'destroy']); 
+
 
 Route::middleware('auth:sanctum')->group(function () {
     /**
@@ -60,3 +56,4 @@ Route::middleware('auth:sanctum')->group(function () {
      */
 
 });
+
