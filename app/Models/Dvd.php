@@ -8,13 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Dvd extends Model
 {
     use HasFactory;
-    /**
-     * ============1================
-     * Define the table name and its attributes/columns
-     * the attributes are title, director, year
-     */
-    protected $table = 'dvds';
-    protected $fillable = [
 
+    // Table name (optional if it matches plural of model)
+    protected $table = 'dvds';
+
+    // Mass assignable fields
+    protected $fillable = [
+        'title',
+        'genre',
+        'release_year',
+        'rating',
     ];
 }

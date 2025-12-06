@@ -3,134 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dvd;
-use App\Http\Resources\DvdResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class DvdController extends Controller
 {
-    /**
-     * ===========1================
-     * Create index function that returns all dvd data
-     */
+    // GET /api/dvds
     public function index()
     {
-        // get all dvd data
-        // $dvds = ....
-
-        // return the collection of dvds
-        // return ....
+        return response()->json(Dvd::all(), 200);
     }
 
-    /**
-     * ===========2================
-     * Create store function to add new dvd data
-     */
+    // POST /api/dvds
     public function store(Request $request)
     {
-        // The request body are title, director and year
-        $validator = Validator::make($request->all(), [
-            
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'genre' => 'nullable|string|max:100',
+            'release_year' => 'nullable|digits:4|integer',
+            'rating' => 'nullable|string|max:10',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                // 'success' => false,
-                // 'errors' => ....
-            ], 422);
-        }
+        $dvd = Dvd::create($validated);
 
-        // Create dvd data
-        // $dvd = ....
-
-        // return the created dvd as resource
-        // return ....
-
+        return response()->json($dvd, 201);
     }
 
-    /**
-     * ===========3================
-     * Create show function to display single dvd data by ID
-     */
-    public function show(string $id)
+    // GET /api/dvds/{id}
+    public function show($id)
     {
-        // Find dvd data by ID
-        // $dvd = ....
-
-        if (!$dvd) {
-            return response()->json([
-                // 'success' => false,
-                // 'message' => ....
-            ], 404);
-        }
-
-        // return the dvd as resource
-        // return ....
+        $dvd = Dvd::findOrFail($id);
+        return response()->json($dvd, 200);
     }
 
-    /**
-     * ===========4================
-     * Create update function to modify existing dvd data
-     */
-    public function update(Request $request, string $id)
+    // PUT /api/dvds/{id}
+    public function update(Request $request, $id)
     {
-        // Find dvd data by ID
-        // $dvd = ....
-        $dvd = Dvd::find($id);
+        $dvd = Dvd::findOrFail($id);
 
-        if (!$dvd) {
-            return response()->json([
-                'success' => false,
-                'message' => 'DVD not found'
-            ], 404);
-        }
-
-        // The request body are title, director and year
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'director' => 'sometimes|required|string|max:255',
-            'year' => 'sometimes|required|integer|min:1900|max:' . date('Y')
+            'genre' => 'nullable|string|max:100',
+            'release_year' => 'nullable|digits:4|integer',
+            'rating' => 'nullable|string|max:10',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
+        $dvd->update($validated);
 
-        // Update dvd data
-        // $dvd->....
-        $dvd->update($request->all());
-
-        // return the updated dvd as resource
-        // return ....
-        return (new DvdResource($dvd))
-            ->additional(['message' => 'DVD updated successfully'])
-            ->response()
-            ->setStatusCode(200);
+        return response()->json($dvd, 200);
     }
 
-    /**
-     * ===========5================
-     * Create destroy function to delete dvd data
-     */
-    public function destroy(string $id)
+    // DELETE /api/dvds/{id}
+    public function destroy($id)
     {
-        // Find dvd data by ID
-        // $dvd = ....
+        $dvd = Dvd::findOrFail($id);
+        $dvd->delete();
 
-        if (!$dvd) {
-            return response()->json([
-                // 'success' => false,
-                // 'message' => ....
-            ], 404);
-        }
-
-        // Delete dvd data
-        // $dvd->....
-
-        // return success message
-        // return ....
+        return response()->json(['message' => 'DVD deleted successfully'], 200);
     }
 }

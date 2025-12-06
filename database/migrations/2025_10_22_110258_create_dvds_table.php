@@ -4,20 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateDvdsTable extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        /**
-         * ===========1============
-         * Define the table name and its attributes/columns and their data types
-         * id, title, director, year, timestamps
-         */
         Schema::create('dvds', function (Blueprint $table) {
-
+            $table->id();
+            $table->string('title');
+            $table->string('genre')->nullable();
+            $table->year('release_year')->nullable();
+            $table->string('rating')->nullable(); // e.g., PG, R, etc.
+            $table->timestamps();
         });
     }
 
@@ -28,4 +28,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('dvds');
     }
-};
+}
