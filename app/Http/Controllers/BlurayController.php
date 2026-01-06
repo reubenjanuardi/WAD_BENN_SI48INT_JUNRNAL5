@@ -16,10 +16,9 @@ class BlurayController extends Controller
     public function index()
     {
         // get all bluray data
-        // $blurays = ....
-
+        $blurays = Bluray::all();
         // return the collection of blurays
-        // return ....
+        return BlurayResource::collection($blurays);
     }
 
     /**
@@ -30,21 +29,30 @@ class BlurayController extends Controller
     {
         // The request body are title, director and year
         $validator = Validator::make($request->all(), [
-            
+            'title' => 'required|string|max:255',
+            'director' => 'required|string|max:255',
+            'year' => 'required|integer|min:0'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 // 'success' => false,
                 // 'errors' => ....
+                'message' => 'Please check your request',
+                'errors' => $validator->errors()
             ], 422);
         }
 
         // Create bluray data
         // $bluray = ....
+        $bluray = Bluray::create($validator->validate());
 
         // return the created bluray as resource
         // return ....
+        return (new BlurayResource($bluray))
+                ->additional(['message' => 'Bluray created successfully'])
+                ->response()
+                ->setStatusCode(201);
 
     }
 
@@ -55,17 +63,18 @@ class BlurayController extends Controller
     public function show(string $id)
     {
         // Find bluray data by ID
-        // $bluray = ....
+        $bluray = Bluray::find($id);
 
         if (!$bluray) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                'message' => 'Item not found'
             ], 404);
         }
 
         // return the bluray as resource
-        // return ....
+        return new BlurayResource($bluray);
     }
 
     /**
@@ -76,16 +85,19 @@ class BlurayController extends Controller
     {
         // The request body are title, director and year
         $validator = Validator::make($request->all(), [
-            
+            'title' => 'sometimes|required|string|max:255',
+            'director' => 'sometimes|required|string|max:255',
+            'year' => 'sometimes|required|integer|min:0'
         ]);
 
         // Find bluray data by ID
-        // $bluray = ....
+        $bluray = Bluray::find($id);
 
         if (!$bluray) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                'message' => 'Item not found'
             ], 404);
         }
 
@@ -94,14 +106,19 @@ class BlurayController extends Controller
             return response()->json([
                 // 'success' => false,
                 // 'errors' => ....
+                'message' => 'Please check your request',
+                'errors' => $validator->errors()
             ], 422);
         }
 
         // Update bluray data
-        // $bluray->....
+        $bluray->update($validator->validate());
 
         // return the updated bluray as resource
-        // return ....
+        return (new BlurayResource($bluray))
+            ->additional(['message' => 'Bluray updated successfully'])
+            ->response()
+            ->setStatusCode(200);
     }
 
     /**
@@ -111,19 +128,20 @@ class BlurayController extends Controller
     public function destroy(string $id)
     {
         // Find bluray data by ID
-        // $bluray = ....
+        $bluray = Bluray::find($id);
 
         if (!$bluray) {
             return response()->json([
                 // 'success' => false,
                 // 'message' => ....
+                'message' => 'item not found'
             ], 404);
         }
 
         // Delete bluray data
-        // $bluray->....
+        $bluray->delete();
 
         // return success message
-        // return ....
+        return response()->json(['message' => 'Bluray deleted successfully'], 200);
     }
 }
